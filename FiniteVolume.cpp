@@ -25,7 +25,30 @@ void FiniteVolume::Build_flux_mat_and_rhs(const double& t)
 	vector<Triplet<double>> triplets;	triplets.clear();
 	for (int i = 0; i < _msh->Get_edges().size(); i++)
 	{
-		// TODO
+		int t1 = _msh -> Get_edges()[i].Get_T1();//ref du triangle 1 de l'arrête i
+		int t2 = _msh -> Get_edges()[i].Get_T2();//Ref du triangle 2 de l'arrête i
+		double pos_t1_abs = _msh -> Get_triangles_center()(t1,0);
+		double pos_t1_ord = _msh -> Get_triangles_center()(t1,1);//vecteur pos du triangle T1	
+		double vol_1 = _msh -> Get_triangles_area()(t1);//Volume/aire du triangle T1
+		double lenght = _msh -> Get_edges_length()[i];//longueur de l'arrête i
+		//centre de l'arrête i
+		double pos_center_i_abs = _msh -> Get_edges_center()(i,0);
+		double pos_center_i_ord = _msh -> Get_edges_center()(i,1);
+		// vitesse au ventre de l'arête
+		double v_x = _fct -> Velocity_x(pos_center_i_abs, pos_center_i_ord, t);
+		double v_y = _fct -> Velocity_y(pos_center_i_abs, pos_center_i_ord, t);
+		// normale de l'arête
+		double n_e_x = _msh -> Get_edges_normal()(i,0);
+		double n_e_y = _msh -> Get_edges_normal()(i,1);
+		double vn = v_x*n_e_x + v_y*n_e_y;
+
+		double alpha;
+		double beta;
+
+		if (_df -> Get_numerical_flux_choice() == "rusanov") //Si schéma Rusanov
+		{
+			alpha=1/2*()
+		}
 	}
 	_mat_flux.setFromTriplets(triplets.begin(), triplets.end());
 }
