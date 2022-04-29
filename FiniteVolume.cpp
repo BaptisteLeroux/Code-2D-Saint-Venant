@@ -44,11 +44,42 @@ void FiniteVolume::Build_flux_mat_and_rhs(const double& t)
 
 		double alpha;
 		double beta;
+		double c;
 
 		if (_df -> Get_numerical_flux_choice() == "rusanov") //Si schéma Rusanov
 		{
-			alpha=1/2*()
+			alpha=1/2*(v_x + v_y) - c;
+			beta =1/2*(v_x + v_y) + c;
 		}
+
+		if (t2!=-1)
+		{
+			double pos_t2_abs = _msh -> Get_triangles_center()(t2,0);
+			double pos_t2_ord = _msh -> Get_triangles_center()(t2,1);
+			double delta = sqrt(pow(pos_t1_abs-pos_t2_abs,2)+pow(pos_t1_ord-pos_t2_ord,2));//distance entre le triangle T1 et le triangle T2
+			double vol_2 = _msh -> Get_triangles_area()(t2);
+
+			triplets.push_back({t1,t1,lenght*alpha/vol_1});//(i,i)
+			triplets.push_back({t1,t2,lenght*beta/vol_1});//(i,k)
+			triplets.push_back({t2,t1,-lenght*alpha/vol_2});//(k,i)
+			triplets.push_back({t2,t2,-lenght*beta/vol_2});//(k,k)
+		}
+		else //Condition au bord
+		{
+			//distance triangle centre i et arrete i
+			double delta = sqrt(pow(pos_t1_abs-pos_center_i_abs,2)+pow(pos_t1_ord-pos_center_i_ord,2));
+			
+
+			if (_msh -> Get_edges()[i].Get_BC() == "Neumann") // Neumann
+			{
+
+			}
+
+			else if (_msh -> Get_edges()[i].Get_BC() == "Dirichlet") // condition de Dirichlet
+			{
+
+			}
+
 	}
 	_mat_flux.setFromTriplets(triplets.begin(), triplets.end());
 }
